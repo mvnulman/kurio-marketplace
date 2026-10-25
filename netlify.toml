@@ -1,0 +1,9 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+# Netlify serve arquivos estáticos (assets, SW) antes das reescritas de SPA.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
