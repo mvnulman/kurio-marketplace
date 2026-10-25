@@ -43,6 +43,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ['scripts/**/*.{js,mjs}'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     files: ['src/routes/**/*.tsx', 'src/router.tsx'],
     rules: { 'react-refresh/only-export-components': 'off' },
   },
