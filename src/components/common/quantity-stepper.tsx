@@ -10,6 +10,7 @@ export function QuantityStepper({
   label = 'Quantidade',
   className,
   compact = false,
+  disabled = false,
 }: {
   value: number
   max: number
@@ -18,8 +19,14 @@ export function QuantityStepper({
   label?: string
   className?: string
   compact?: boolean
+  disabled?: boolean
 }) {
-  const disabled = max < min
+  const unavailable = disabled || max < min
+
+  const change = (next: number) => {
+    if (unavailable) return
+    onChange(next)
+  }
 
   return (
     <div
@@ -27,13 +34,14 @@ export function QuantityStepper({
       aria-label={label}
       className={cn(
         'border-border-soft bg-surface inline-flex items-center rounded-md border',
+        unavailable && 'opacity-50',
         className,
       )}
     >
       <button
         type="button"
-        onClick={() => onChange(Math.max(min, value - 1))}
-        disabled={disabled || value <= min}
+        onClick={() => change(Math.max(min, value - 1))}
+        disabled={unavailable || value <= min}
         aria-label="Diminuir quantidade"
         className={cn(
           'text-muted-foreground hover:text-foreground disabled:hover:text-muted-foreground flex items-center justify-center p-2 disabled:opacity-40',
@@ -54,8 +62,8 @@ export function QuantityStepper({
       </output>
       <button
         type="button"
-        onClick={() => onChange(Math.min(max, value + 1))}
-        disabled={disabled || value >= max}
+        onClick={() => change(Math.min(max, value + 1))}
+        disabled={unavailable || value >= max}
         aria-label="Aumentar quantidade"
         className={cn(
           'text-muted-foreground hover:text-foreground disabled:hover:text-muted-foreground flex items-center justify-center p-2 disabled:opacity-40',
