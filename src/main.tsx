@@ -5,13 +5,16 @@ import '@/styles/globals.css'
 import { env } from '@/lib/env'
 
 async function bootstrap(): Promise<void> {
-  // A camada de mocks precisa estar ativa antes do primeiro request da aplicação.
-  if (env.enableMocks) {
-    const { startMockWorker } = await import('@/mocks/browser')
-    await startMockWorker()
-  }
+  // A camada de mocks precisa estar ativa antes do primeiro request da aplicação,
+  // mas os chunks podem ser baixados em paralelo para acelerar o boot.
+  const appPromise = import('@/router')
+  const mocksPromise = env.enableMocks
+    ? import('@/mocks/browser').then(({ startMockWorker }) => startMockWorker())
+    : Promise.resolve()
 
-  const { App } = await import('@/router')
+  await mocksPromise
+  const { App } = await appPromise
+
   const container = document.getElementById('root')
   if (!container) throw new Error('Elemento #root não encontrado')
 

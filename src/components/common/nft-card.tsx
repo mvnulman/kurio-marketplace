@@ -30,8 +30,8 @@ export function NftCard({ nft, priority = false }: { nft: Nft; priority?: boolea
             <img
               src={nft.imageUrl}
               alt={`${nft.name} — obra da coleção ${nft.collection.name}`}
-              width={900}
-              height={900}
+              width={720}
+              height={720}
               loading={priority ? 'eager' : 'lazy'}
               fetchPriority={priority ? 'high' : 'auto'}
               decoding="async"
@@ -102,3 +102,4 @@ export function NftCardSkeleton() {
     </div>
   )
 }
+

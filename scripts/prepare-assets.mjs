@@ -46,7 +46,7 @@ async function main() {
           saturation: variant.saturation,
           brightness: variant.brightness,
         })
-        .resize(900, 900, { fit: 'cover' })
+        .resize(720, 720, { fit: 'cover' })
         .webp({ quality: 82, effort: 5 })
         .toFile(output)
 

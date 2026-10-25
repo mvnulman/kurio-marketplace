@@ -55,8 +55,8 @@ export function AuthPage({
             <img
               src="/assets/nfts/ape-01.webp"
               alt="Obra Emerald Ape, um primata com jaqueta verde e óculos escuros"
-              width={900}
-              height={900}
+              width={720}
+              height={720}
               className="h-64 w-full object-cover"
               loading="lazy"
             />
@@ -149,3 +149,4 @@ export function AuthPage({
     </div>
   )
 }
+

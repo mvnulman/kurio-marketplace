@@ -33,8 +33,8 @@ export function NftGallery({ nft }: { nft: Nft }) {
             <img
               src={image}
               alt=""
-              width={900}
-              height={900}
+              width={720}
+              height={720}
               loading="lazy"
               decoding="async"
               className="size-full object-cover"
@@ -48,8 +48,8 @@ export function NftGallery({ nft }: { nft: Nft }) {
           <img
             src={activeImage}
             alt={`${nft.name} — imagem ${activeIndex + 1} de ${images.length}`}
-            width={900}
-            height={900}
+            width={720}
+            height={720}
             fetchPriority="high"
             decoding="async"
             className="size-full object-cover"
@@ -71,3 +71,4 @@ export function NftGallery({ nft }: { nft: Nft }) {
     </div>
   )
 }
+

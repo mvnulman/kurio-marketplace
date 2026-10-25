@@ -172,6 +172,23 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ connected }), [connected])
 
+  // WebSocket aberto impede o bfcache: encerra no pagehide e restaura no pageshow.
+  useEffect(() => {
+    const onPageHide = () => disconnectSocket()
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        updateSocketToken(sessionTokenStorage.get())
+        void queryClient.invalidateQueries()
+      }
+    }
+    window.addEventListener('pagehide', onPageHide)
+    window.addEventListener('pageshow', onPageShow)
+    return () => {
+      window.removeEventListener('pagehide', onPageHide)
+      window.removeEventListener('pageshow', onPageShow)
+    }
+  }, [queryClient])
+
   return <RealtimeContext.Provider value={value}>{children}</RealtimeContext.Provider>
 }
 

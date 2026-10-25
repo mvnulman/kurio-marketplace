@@ -36,8 +36,8 @@ export function FeaturedSection({ nfts }: { nfts: Nft[] }) {
             <img
               src={main.imageUrl}
               alt={`${main.name} — obra em destaque`}
-              width={900}
-              height={900}
+              width={720}
+              height={720}
               loading="lazy"
               decoding="async"
               className="aspect-[16/11] w-full object-cover transition-transform duration-700 group-hover:scale-[1.02] lg:aspect-auto lg:h-full"
@@ -79,8 +79,8 @@ export function PromoBanners() {
         <img
           src="/assets/nfts/ape-03.webp"
           alt=""
-          width={900}
-          height={900}
+          width={720}
+          height={720}
           loading="lazy"
           className="absolute inset-0 size-full object-cover opacity-35"
         />
@@ -105,8 +105,8 @@ export function PromoBanners() {
         <img
           src="/assets/nfts/ape-07.webp"
           alt=""
-          width={900}
-          height={900}
+          width={720}
+          height={720}
           loading="lazy"
           className="absolute inset-0 size-full object-cover opacity-35"
         />
@@ -177,13 +177,14 @@ export function CollectorDiary() {
               to="/"
               search={entry.search}
               hash="catalogo"
+              aria-label={`Ver obras de ${entry.author}`}
               className="block focus-visible:outline-none"
             >
               <img
                 src={entry.image}
                 alt=""
-                width={900}
-                height={900}
+                width={720}
+                height={720}
                 loading="lazy"
                 className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
@@ -208,3 +209,4 @@ export function CollectorDiary() {
     </section>
   )
 }
+

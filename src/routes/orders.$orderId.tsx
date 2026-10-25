@@ -39,8 +39,8 @@ function OrderItems({ order }: { order: Order }) {
             <img
               src={item.imageUrl}
               alt=""
-              width={900}
-              height={900}
+              width={720}
+              height={720}
               loading="lazy"
               className="size-12 rounded-md object-cover"
             />
@@ -255,3 +255,4 @@ function OrderReceiptPage() {
     </div>
   )
 }
+

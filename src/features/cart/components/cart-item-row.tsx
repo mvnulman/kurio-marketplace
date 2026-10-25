@@ -31,8 +31,8 @@ export function CartItemRow({
           <img
             src={item.imageUrl}
             alt={`${item.name} — obra no carrinho`}
-            width={900}
-            height={900}
+            width={720}
+            height={720}
             loading="lazy"
             decoding="async"
             className="size-16 rounded-md object-cover sm:size-20"
@@ -130,3 +130,4 @@ export function CartItemRowSkeleton() {
     </div>
   )
 }
+

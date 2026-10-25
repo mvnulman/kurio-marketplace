@@ -56,8 +56,8 @@ export function HomeHero() {
               <img
                 src="/assets/nfts/ape-01.webp"
                 alt="Emerald Ape: primata de jaqueta verde usando óculos escuros e colar de jade"
-                width={900}
-                height={900}
+                width={720}
+                height={720}
                 fetchPriority="high"
                 decoding="async"
                 className="size-full object-cover"
@@ -87,3 +87,4 @@ export function HomeHero() {
     </section>
   )
 }
+

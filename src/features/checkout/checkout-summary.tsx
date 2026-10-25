@@ -86,8 +86,8 @@ export function CheckoutSummary({
               <img
                 src={line.imageUrl}
                 alt=""
-                width={900}
-                height={900}
+                width={720}
+                height={720}
                 loading="lazy"
                 className="size-10 rounded object-cover"
               />
@@ -323,3 +323,4 @@ export function CheckoutSummarySkeleton() {
     </div>
   )
 }
+
