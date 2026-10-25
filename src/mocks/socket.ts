@@ -16,6 +16,7 @@ const socketLink = ws.link('/')
 
 export const socketHandlers = [
   socketLink.addEventListener('connection', (connection) => {
+    console.log('[mock-socket] connection aberta:', connection.client.url.toString())
     const io = toSocketIo(connection)
     const token = connection.client.url.searchParams.get('token')
     const user = getUserBySessionToken(token)

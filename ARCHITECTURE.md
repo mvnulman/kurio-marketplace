@@ -243,7 +243,10 @@ expõe tudo isso na interface.
 
 1. **Transporte do socket simulado**: o binding do MSW intercepta apenas WebSocket;
    o cliente é fixado em `transports: ['websocket']` (sem upgrade de polling).
-   Namespaces customizados e salas não são suportados pelo wrapper.
+   Namespaces customizados e salas não são suportados pelo wrapper. Além disso,
+   o engine.io captura o `WebSocket` global na inicialização do módulo — por isso o
+   cliente é importado dinamicamente no primeiro uso, depois da ativação do Service
+   Worker (com import estático o handshake caía no servidor estático e virava HTTP 200).
 2. **Ambiente de auditoria local**: o antivírus da máquina de desenvolvimento
    injeta scripts `http://gc.kis.v2.scr.kaspersky-labs.com/...` nas páginas servidas
    localmente, o que derruba as auditorias `is-on-https`/`unminified-javascript`
