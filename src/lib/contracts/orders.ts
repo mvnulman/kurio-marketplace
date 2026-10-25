@@ -19,6 +19,7 @@ export interface OrderCustomer {
   email: string
   ensName: string
   walletNickname: string
+  referralCode?: string
   observation?: string
 }
 

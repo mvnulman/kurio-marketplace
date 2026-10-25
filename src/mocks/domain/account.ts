@@ -15,7 +15,7 @@ import { createSalt, hashPassword, verifyPassword } from '../password'
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9._-]{3,24}$/
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-const ENS_PATTERN = /^[a-zA-Z0-9-]{3,32}$/
+const ENS_PATTERN = /^[a-zA-Z0-9-]{3,32}(\.eth)?$/i
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/
 const MAX_AVATAR_BYTES = 1_500_000
 

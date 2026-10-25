@@ -52,14 +52,17 @@ function validateCustomer(customer: OrderCustomer): void {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     fields.email = 'Informe um e-mail válido.'
   }
-  if (!/^[a-zA-Z0-9-]{3,32}$/.test(ensName)) {
-    fields.ensName = 'Informe um nome ENS válido (sem .eth).'
+  if (!/^[a-zA-Z0-9-]{3,32}(\.eth)?$/i.test(ensName)) {
+    fields.ensName = 'Informe um nome ENS válido.'
   }
   if (walletNickname.length < 2 || walletNickname.length > 40) {
     fields.walletNickname = 'Informe um apelido entre 2 e 40 caracteres.'
   }
   if (customer.observation && customer.observation.length > 500) {
     fields.observation = 'A observação deve ter no máximo 500 caracteres.'
+  }
+  if (customer.referralCode && customer.referralCode.length > 40) {
+    fields.referralCode = 'O código de indicação deve ter no máximo 40 caracteres.'
   }
 
   if (Object.keys(fields).length > 0) {

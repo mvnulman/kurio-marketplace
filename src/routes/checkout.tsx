@@ -1,16 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PagePlaceholder } from '@/components/common/page-placeholder'
+import { requireSession } from '@/features/auth/guards'
+import { CheckoutPage } from '@/features/checkout/checkout-page'
 
 export const Route = createFileRoute('/checkout')({
-  component: CheckoutPlaceholder,
+  beforeLoad: ({ location }) => requireSession(location),
+  head: () => ({ meta: [{ title: 'Pagamento — KURIO' }] }),
+  component: CheckoutPage,
 })
-
-function CheckoutPlaceholder() {
-  return (
-    <PagePlaceholder
-      title="Pagamento"
-      description="Perfil do colecionador, carteiras, cotação e envio do pedido chegam na etapa de checkout."
-    />
-  )
-}
