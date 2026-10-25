@@ -11,12 +11,14 @@ export function FavoriteButton({
   favorite,
   className,
   size = 'default',
+  withLabel = false,
 }: {
   nftId: string
   nftName: string
   favorite: boolean
   className?: string
   size?: 'default' | 'lg'
+  withLabel?: boolean
 }) {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
@@ -43,8 +45,11 @@ export function FavoriteButton({
       aria-busy={toggle.isPending}
       disabled={toggle.isPending}
       className={cn(
-        'bg-background/70 hover:bg-background focus-visible:ring-ring inline-flex items-center justify-center rounded-full border backdrop-blur transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-wait',
-        size === 'lg' ? 'size-10' : 'size-8',
+        'bg-background/70 hover:bg-background focus-visible:ring-ring inline-flex items-center justify-center border backdrop-blur transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-wait',
+        withLabel
+          ? 'h-10 gap-2 rounded-md px-4 text-[10px] font-medium tracking-[0.08em] uppercase'
+          : 'rounded-full',
+        !withLabel && (size === 'lg' ? 'size-10' : 'size-8'),
         className,
       )}
     >
@@ -59,6 +64,7 @@ export function FavoriteButton({
           )}
         />
       )}
+      {withLabel ? <span>{favorite ? 'Favoritado' : 'Favoritar'}</span> : null}
     </button>
   )
 }
