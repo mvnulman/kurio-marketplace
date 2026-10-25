@@ -1,30 +1,30 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { createRootRoute, Link } from '@tanstack/react-router'
+
+import { SiteShell } from '@/components/layout/site-shell'
+import { Button } from '@/components/ui/button'
 
 export const Route = createRootRoute({
-  component: RootLayout,
+  component: SiteShell,
   notFoundComponent: NotFound,
+  head: () => ({
+    meta: [{ title: 'KURIO — Marketplace de NFTs' }],
+  }),
 })
-
-function RootLayout() {
-  return (
-    <div className="flex min-h-dvh flex-col">
-      <main id="conteudo" className="flex-1">
-        <Outlet />
-      </main>
-      {import.meta.env.DEV ? <TanStackRouterDevtools position="bottom-right" /> : null}
-    </div>
-  )
-}
 
 function NotFound() {
   return (
     <div className="container-page py-24 text-center">
-      <p className="text-accent text-xs tracking-[0.2em] uppercase">Erro 404</p>
+      <p className="text-accent text-[10px] tracking-[0.24em] uppercase">Erro 404</p>
       <h1 className="mt-3 text-3xl font-bold">Página não encontrada</h1>
-      <p className="text-muted-foreground mt-2 text-sm">
-        O endereço acessado não existe neste marketplace.
+      <p className="text-muted-foreground mx-auto mt-3 max-w-md text-sm">
+        O endereço acessado não existe ou o recurso foi removido. Você pode voltar ao catálogo e
+        continuar explorando.
       </p>
+      <Button asChild className="mt-6">
+        <Link to="/" hash="catalogo">
+          Ir para o catálogo
+        </Link>
+      </Button>
     </div>
   )
 }
