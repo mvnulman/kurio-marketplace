@@ -43,6 +43,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
+  },
+  {
     files: ['scripts/**/*.{js,mjs}'],
     languageOptions: { globals: globals.node },
   },
