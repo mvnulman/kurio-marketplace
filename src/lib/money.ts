@@ -53,15 +53,12 @@ export function compareEth(a: string, b: string): number {
 }
 
 export function formatEth(value: string | number, options?: { withSymbol?: boolean }): string {
-  const amount = new Decimal(value)
-  const [integer, fraction = ''] = amount.toFixed(2).split('.')
-  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-  const formatted = `${grouped},${fraction}`
+  const formatted = toEthString(value)
   return options?.withSymbol === false ? formatted : `${formatted} ETH`
 }
 
 export function formatEthPrecise(value: string): string {
-  return `${new Decimal(value).toFixed()} ETH`.replace('.', ',')
+  return `${toEthString(value)} ETH`
 }
 
 export function formatUsd(value: number): string {

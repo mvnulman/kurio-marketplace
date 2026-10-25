@@ -1,25 +1,55 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useMemo } from 'react'
 
-import { catalogSearchSchema } from '@/features/catalog/search'
+import { CatalogSection } from '@/features/catalog/components/catalog-section'
+import { HomeHero } from '@/features/catalog/components/home-hero'
+import { CollectorDiary, FeaturedSection, PromoBanners } from '@/features/catalog/components/home-sections'
+import { useCatalogQuery } from '@/features/catalog/queries'
+import { catalogSearchSchema, filtersFromSearch } from '@/features/catalog/search'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search) => catalogSearchSchema.parse(search),
   head: () => ({
-    meta: [{ title: 'KURIO — Seja dono do futuro da arte digital' }],
+    meta: [
+      { title: 'KURIO — Seja dono do futuro da arte digital' },
+      {
+        name: 'description',
+        content:
+          'Descubra NFTs selecionados de criadores emergentes e consagrados. Colecione arte digital verificada no marketplace KURIO.',
+      },
+    ],
   }),
-  component: HomePlaceholder,
+  component: HomePage,
 })
 
-function HomePlaceholder() {
+function HomePage() {
+  const search = Route.useSearch()
+  const { q, cat, net, col, rar, min, max, sort, page } = search
+
+  const filters = useMemo(
+    () => filtersFromSearch({ q, cat, net, col, rar, min, max, sort, page }),
+    [q, cat, net, col, rar, min, max, sort, page],
+  )
+
+  const catalog = useCatalogQuery(filters)
+
   return (
-    <section className="container-page py-24">
-      <p className="text-accent text-xs tracking-[0.2em] uppercase">Bem-vindo à Kurio</p>
-      <h1 className="text-display mt-4 max-w-xl font-bold uppercase">
-        Seja dono do futuro da arte digital
-      </h1>
-      <p className="text-muted-foreground mt-6 max-w-lg text-sm">
-        Fundação do projeto: tipografia, cores, componentes base, sessão e roteamento prontos.
-      </p>
-    </section>
+    <>
+      <HomeHero />
+      <CatalogSection
+        search={search}
+        data={catalog.data}
+        error={catalog.error}
+        isPending={catalog.isPending}
+        isFetching={catalog.isFetching}
+        isError={catalog.isError}
+        onRetry={() => {
+          void catalog.refetch()
+        }}
+      />
+      <FeaturedSection nfts={catalog.data?.items ?? []} />
+      <PromoBanners />
+      <CollectorDiary />
+    </>
   )
 }
