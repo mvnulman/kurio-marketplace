@@ -127,18 +127,21 @@ export async function changePassword(
 
 export function updateAvatar(user: SeedUser, avatarUrl: string): Profile {
   const trimmed = avatarUrl.trim()
-  const isDataUrl = /^data:image\/(png|jpeg|webp);base64,/.test(trimmed)
-  const isLocalAsset = trimmed.startsWith('/assets/')
 
-  if (!isDataUrl && !isLocalAsset) {
-    throw new MockError(400, 'VALIDATION_ERROR', 'Formato de imagem não suportado.', {
-      fieldErrors: { avatarUrl: 'Envie uma imagem PNG, JPEG ou WebP.' },
-    })
-  }
-  if (trimmed.length > MAX_AVATAR_BYTES) {
-    throw new MockError(413, 'VALIDATION_ERROR', 'A imagem deve ter no máximo 1,5 MB.', {
-      fieldErrors: { avatarUrl: 'A imagem deve ter no máximo 1,5 MB.' },
-    })
+  // string vazia remove o avatar atual
+  if (trimmed !== '') {
+    const isDataUrl = /^data:image\/(png|jpeg|webp);base64,/.test(trimmed)
+    const isLocalAsset = trimmed.startsWith('/assets/')
+    if (!isDataUrl && !isLocalAsset) {
+      throw new MockError(400, 'VALIDATION_ERROR', 'Formato de imagem não suportado.', {
+        fieldErrors: { avatarUrl: 'Envie uma imagem PNG, JPEG ou WebP.' },
+      })
+    }
+    if (trimmed.length > MAX_AVATAR_BYTES) {
+      throw new MockError(413, 'VALIDATION_ERROR', 'A imagem deve ter no máximo 1,5 MB.', {
+        fieldErrors: { avatarUrl: 'A imagem deve ter no máximo 1,5 MB.' },
+      })
+    }
   }
 
   const profile = getProfileRecord(user.id)

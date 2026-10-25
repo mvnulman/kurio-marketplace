@@ -1,16 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PagePlaceholder } from '@/components/common/page-placeholder'
+import { WalletsPage } from '@/features/account/wallets-page'
 
 export const Route = createFileRoute('/profile/wallets')({
-  component: WalletsPlaceholder,
+  head: () => ({ meta: [{ title: 'Carteiras — KURIO' }] }),
+  component: WalletsRoute,
 })
 
-function WalletsPlaceholder() {
-  return (
-    <PagePlaceholder
-      title="Carteiras"
-      description="Cadastro e edição das carteiras principal e secundária chegam na etapa de conta."
-    />
-  )
+function WalletsRoute() {
+  return <WalletsPage />
 }
