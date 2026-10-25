@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { CircleAlert } from 'lucide-react'
+import { CircleAlert, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
@@ -45,6 +45,7 @@ export function CheckoutPage() {
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null)
   const [connection, setConnection] = useState<ConnectionState>('idle')
   const [outdatedQuote, setOutdatedQuote] = useState<Quote | null>(null)
+  const [hasPendingAttempt, setHasPendingAttempt] = useState(false)
   const idempotencyRef = useRef(crypto.randomUUID())
 
   const quote = quoteQuery.data
@@ -125,18 +126,22 @@ export function CheckoutPage() {
     }
     if (!quote) return
 
-    // Revalida preço, disponibilidade, cupom e taxas antes de enviar o pedido.
-    let freshQuote: Quote
-    try {
-      freshQuote = await fetchQuote()
-    } catch {
-      toast.error('Não foi possível revalidar a cotação. Tente novamente.')
-      return
-    }
+    // Após um timeout, o pedido já pode existir: repetir com a mesma chave
+    // recupera o pedido sem duplicar (sem exigir nova cotação).
+    if (!hasPendingAttempt) {
+      // Revalida preço, disponibilidade, cupom e taxas antes de enviar o pedido.
+      let freshQuote: Quote
+      try {
+        freshQuote = await fetchQuote()
+      } catch {
+        toast.error('Não foi possível revalidar a cotação. Tente novamente.')
+        return
+      }
 
-    if (freshQuote.cartVersion !== quote.cartVersion) {
-      setOutdatedQuote(freshQuote)
-      return
+      if (freshQuote.cartVersion !== quote.cartVersion) {
+        setOutdatedQuote(freshQuote)
+        return
+      }
     }
 
     await submitOrder()
@@ -178,6 +183,7 @@ export function CheckoutPage() {
       if (error.code === 'QUOTE_OUTDATED') {
         // Nova cotação exige nova confirmação: a chave de idempotência é renovada.
         idempotencyRef.current = crypto.randomUUID()
+        setHasPendingAttempt(false)
         const meta = error.meta as { quote?: Quote } | undefined
         setOutdatedQuote(meta?.quote ?? null)
         void queryClient.invalidateQueries({ queryKey: cartKeys.all })
@@ -185,6 +191,7 @@ export function CheckoutPage() {
       }
 
       if (error.code === 'TIMEOUT') {
+        setHasPendingAttempt(true)
         toast.error('Tempo esgotado ao confirmar o pagamento.', {
           description:
             'Seu pedido pode ter sido criado. Confirme novamente para consultá-lo sem duplicar a compra.',
@@ -215,6 +222,25 @@ export function CheckoutPage() {
 
   if (quoteQuery.isError || !quote) {
     const isEmpty = isApiError(quoteQuery.error) && quoteQuery.error.code === 'CONFLICT'
+
+    if (isEmpty && hasPendingAttempt) {
+      // Um timeout escondeu o resultado, mas o pedido pode ter sido criado.
+      return (
+        <div className="container-page py-16">
+          <div className="border-accent/40 bg-accent/5 mx-auto max-w-xl rounded-xl border p-8 text-center">
+            <Loader2 className="text-primary mx-auto size-10 animate-spin" aria-hidden="true" />
+            <h1 className="mt-4 text-lg font-bold">Pedido em processamento</h1>
+            <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-xs leading-relaxed">
+              Registramos uma tentativa de pagamento que ainda não foi concluída. Acompanhe o
+              resultado nos seus pedidos — a compra não será duplicada.
+            </p>
+            <Button asChild className="mt-6">
+              <Link to="/orders">Ver meus pedidos</Link>
+            </Button>
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div className="container-page py-16">

@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router'
 import { Toaster } from 'sonner'
 
+import { DemoPanel } from '@/components/common/demo-panel'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 
@@ -18,6 +19,7 @@ export function SiteShell() {
         <Outlet />
       </main>
       <SiteFooter />
+      <DemoPanel />
       <Toaster
         theme="dark"
         position="top-center"

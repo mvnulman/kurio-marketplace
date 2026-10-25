@@ -2,9 +2,10 @@ import { setupWorker } from 'msw/browser'
 
 import { resetMockDb } from './db'
 import { handlers } from './handlers'
+import { socketHandlers } from './socket'
 import { isMockScenario, setScenario } from './scenario'
 
-export const worker = setupWorker(...handlers)
+export const worker = setupWorker(...handlers, ...socketHandlers)
 
 /**
  * Inicia o Service Worker de mocks. Cenários podem ser selecionados via
