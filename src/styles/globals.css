@@ -1,0 +1,188 @@
+@import 'tailwindcss';
+@import '@fontsource/roboto-mono/400.css';
+@import '@fontsource/roboto-mono/500.css';
+@import '@fontsource/roboto-mono/700.css';
+
+@theme {
+  --font-sans: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-background: #140d0a;
+  --color-foreground: #f7f3ec;
+  --color-card: #241612;
+  --color-card-foreground: #f7f3ec;
+  --color-popover: #241612;
+  --color-popover-foreground: #f7f3ec;
+  --color-primary: #d28a4c;
+  --color-primary-foreground: #140d0a;
+  --color-secondary: #b39463;
+  --color-secondary-foreground: #140d0a;
+  --color-muted: #2c1a13;
+  --color-muted-foreground: #cfb28c;
+  --color-accent: #e89b55;
+  --color-accent-foreground: #140d0a;
+  --color-destructive: #e0644a;
+  --color-destructive-foreground: #f7f3ec;
+  --color-success: #8fbf6a;
+  --color-success-foreground: #140d0a;
+  --color-warning: #e0a94a;
+  --color-border: #3f2319;
+  --color-input: #55321f;
+  --color-ring: #e89b55;
+  --color-elevated: #fbfbfb;
+  --color-surface: #1c120e;
+  --color-surface-dark: #38220f;
+  --color-border-soft: #55321f;
+
+  --text-display: 2.6875rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+  --text-hero: 3.5rem;
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -0.03em;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  --animate-shimmer: shimmer 1.6s infinite;
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-slide-up: slide-up 320ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 40%, transparent);
+    color: var(--color-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 78.5rem;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Shimmer dos skeletons: respeita prefers-reduced-motion via @layer base. */
+@utility shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--color-card) 80%, white 4%);
+}
+
+@utility text-balance-pretty {
+  text-wrap: pretty;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--color-accent) 14%, transparent),
+    transparent
+  );
+  animation: var(--animate-shimmer);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after {
+    animation: none;
+  }
+}
+
+/* Scrollbar discreto */
+@layer utilities {
+  .scrollbar-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-soft) transparent;
+  }
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-soft);
+    border-radius: 9999px;
+  }
+}
