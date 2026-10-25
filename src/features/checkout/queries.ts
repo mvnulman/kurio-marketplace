@@ -3,13 +3,17 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchQuote } from '@/lib/api/cart'
 import type { Quote } from '@/lib/contracts/cart'
 
-import { cartKeys } from '@/features/cart/queries'
-
-export function useQuoteQuery(options?: { refetchInterval?: number | false }) {
+/**
+ * Cotação "congelada" no momento em que o checkout abre: mudanças de preço/
+ * estoque/cupom durante a revisão não são aplicadas silenciosamente — a
+ * confirmação revalida no servidor e exige nova confirmação do usuário.
+ */
+export function useCheckoutQuoteQuery() {
   return useQuery<Quote>({
-    queryKey: [...cartKeys.quote()],
+    queryKey: ['checkout', 'quote'],
     queryFn: ({ signal }) => fetchQuote(signal),
-    staleTime: 0,
-    ...options,
+    staleTime: Infinity,
+    gcTime: 0,
+    retry: false,
   })
 }

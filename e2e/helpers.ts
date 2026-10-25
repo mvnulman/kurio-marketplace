@@ -33,8 +33,8 @@ export async function setScenario(page: Page, scenario: string): Promise<void> {
 
 export async function login(page: Page, account = DEMO_ACCOUNT, redirect?: string): Promise<void> {
   await page.goto(redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login')
-  await page.getByLabel(/e-mail/i).fill(account.email)
-  await page.getByLabel(/senha/i).fill(account.password)
+  await page.locator('#login-email').fill(account.email)
+  await page.locator('#login-password').fill(account.password)
   await page.getByRole('button', { name: /entrar/i, exact: true }).click()
   await page.waitForTimeout(900)
 }
@@ -50,7 +50,7 @@ export async function addNftToCart(page: Page, nftId: string, quantity = 1): Pro
   for (let index = 1; index < quantity; index += 1) {
     await page.getByRole('button', { name: 'Aumentar quantidade' }).click()
   }
-  await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+  await page.getByRole('button', { name: 'Comprar', exact: true }).click()
   await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
 }
 
@@ -70,3 +70,12 @@ export async function changeNftPrice(page: Page, nftId: string, priceEth: string
 export function catalogCard(page: Page, index: number) {
   return page.locator('#catalogo article').nth(index)
 }
+
+export function cartRows(page: Page) {
+  return page.locator('section[aria-label="Itens do carrinho"] article')
+}
+
+export async function waitForSession(page: Page): Promise<void> {
+  await expect(page.getByRole('button', { name: /menu da conta/i })).toBeVisible({ timeout: 10_000 })
+}
+

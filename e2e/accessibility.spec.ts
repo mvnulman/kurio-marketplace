@@ -30,21 +30,21 @@ test.describe('acessibilidade e navegação por teclado', () => {
 
     // atalho de busca
     await page.keyboard.press('Control+k')
-    await expect(page.getByLabel(/termo de busca/i)).toBeFocused()
+    await expect(page.locator('#global-search')).toBeFocused()
     await page.keyboard.press('Escape')
 
     // tab até o carrinho e ativação por teclado
-    await page.getByRole('link', { name: /carrinho/i }).focus()
+    await page.getByRole('banner').getByRole('link', { name: /carrinho/i }).focus()
     await page.keyboard.press('Enter')
     await page.waitForURL('/cart')
-    await expect(page.getByRole('heading', { name: /carrinho/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Carrinho de NFTs' })).toBeVisible()
   })
 
   test('mensagens de erro são associadas aos campos', async ({ page }) => {
     await startFresh(page, '/login')
     await page.getByRole('button', { name: /entrar/i, exact: true }).click()
 
-    const email = page.getByLabel(/e-mail/i)
+    const email = page.locator('#login-email')
     await expect(email).toHaveAttribute('aria-invalid', 'true')
     await expect(page.locator('p[role=alert]').first()).toBeVisible()
   })
@@ -59,11 +59,13 @@ test.describe('acessibilidade e navegação por teclado', () => {
       })
     })
 
-    await page.goto('/')
+    // nova combinação de busca ⇒ chave nova ⇒ carregamento visível
+    await page.goto('/?rar=epico')
     await page.waitForTimeout(250)
-    await expect(page.locator('[data-slot=skeleton]').first()).toBeVisible()
+    await expect(page.locator('#catalogo [data-slot=skeleton]:visible').first()).toBeVisible()
     await page.waitForTimeout(2500)
     await expect(page.locator('#catalogo article').first()).toBeVisible()
   })
 })
+
 

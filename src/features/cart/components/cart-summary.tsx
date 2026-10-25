@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, Loader2, Tag, X } from 'lucide-react'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
@@ -25,7 +25,6 @@ export function CartSummary({
   onApplyCoupon,
   onRemoveCoupon,
 }: CartSummaryProps) {
-  const id = useId()
   const { isAuthenticated } = useAuth()
   const [code, setCode] = useState('')
 
@@ -80,15 +79,13 @@ export function CartSummary({
             void onApplyCoupon(code.trim())
           }}
         >
-          <label
-            htmlFor={`${id}-coupon`}
-            className="text-muted-foreground text-[10px] font-bold tracking-[0.1em] uppercase"
-          >
+          <label htmlFor="cart-coupon" className="text-muted-foreground text-[10px] font-bold tracking-[0.1em] uppercase">
             Código promocional
           </label>
           <div className="mt-2 flex gap-2">
             <Input
-              id={`${id}-coupon`}
+              id="cart-coupon"
+              name="coupon"
               value={code}
               onChange={(event) => setCode(event.target.value)}
               placeholder="Digite o código…"
@@ -180,3 +177,4 @@ export function couponErrorToast(error: unknown): void {
 export function CartSpinner() {
   return <Loader2 className="size-4 animate-spin" aria-hidden="true" />
 }
+

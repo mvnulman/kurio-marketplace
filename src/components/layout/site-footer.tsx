@@ -230,7 +230,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="text-muted-foreground/60 mt-12 text-center text-[10px]">
+        <p className="text-muted-foreground mt-12 text-center text-[10px]">
           © 2026 Kurio. Propriedade digital para todos. Projeto de demonstração.
         </p>
       </div>

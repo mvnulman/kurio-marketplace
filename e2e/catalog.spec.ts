@@ -1,6 +1,6 @@
 
 
-import { addNftToCart, catalogCard, login, startFresh } from './helpers'
+import { cartRows, waitForSession, addNftToCart, catalogCard, login, startFresh } from './helpers'
 import { expect, test } from './fixtures'
 
 test.describe('descoberta do catálogo', () => {
@@ -18,26 +18,39 @@ test.describe('descoberta do catálogo', () => {
 
   test('filtros combináveis compõem a URL e reiniciam a paginação', async ({ page }) => {
     await startFresh(page)
+    const isMobile = (page.viewportSize()?.width ?? 1440) < 1024
 
     // vai para a página 2 primeiro
     await page.getByRole('button', { name: 'Página 2' }).click()
     await expect(page).toHaveURL(/page=2/)
 
-    // filtro de coleção
-    await page.getByLabel(/Kurio Apes/).first().check()
+    if (isMobile) {
+      await page.getByRole('button', { name: /filtros/i }).click()
+      await page.getByRole('checkbox', { name: /Kurio Apes/ }).check()
+      await page.getByRole('button', { name: /ver \d+ resultado/i }).click()
+    } else {
+      await page.getByRole('checkbox', { name: /Kurio Apes/ }).check()
+    }
+
     await expect(page).toHaveURL(/col=kurio-apes/)
     await expect(page).not.toHaveURL(/page=/)
     await expect(page.locator('#catalogo article')).toHaveCount(9)
 
     // adiciona filtro de rede (combinável)
-    await page.getByLabel(/Polygon/).check()
+    if (isMobile) {
+      await page.getByRole('button', { name: /filtros/i }).click()
+      await page.getByRole('checkbox', { name: /Polygon/ }).check()
+      await page.getByRole('button', { name: /ver \d+ resultado/i }).click()
+    } else {
+      await page.getByRole('checkbox', { name: /Polygon/ }).check()
+    }
     await expect(page).toHaveURL(/net=polygon/)
   })
 
   test('ordenação muda o primeiro resultado e sobrevive ao refresh', async ({ page }) => {
     await startFresh(page)
 
-    await page.getByLabel(/ordenar resultados/i).click()
+    await page.getByRole('combobox', { name: /ordenar resultados/i }).click()
     await page.getByRole('option', { name: /menor preço/i }).click()
     await expect(page).toHaveURL(/sort=price-asc/)
     await expect(catalogCard(page, 0)).toContainText('Golden Signal')
@@ -80,14 +93,14 @@ test.describe('carrinho', () => {
     for (let index = 0; index < 3; index += 1) {
       await page.getByRole('button', { name: 'Aumentar quantidade' }).click()
     }
-    await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+    await page.getByRole('button', { name: 'Comprar', exact: true }).click()
     await page.waitForTimeout(600)
 
     await page.goto('/cart')
-    await expect(page.locator('article')).toHaveCount(2)
+    await expect(cartRows(page)).toHaveCount(2)
 
     // cupom válido
-    await page.getByLabel(/código promocional/i).fill('KURIO10')
+    await page.locator('#cart-coupon').fill('KURIO10')
     await page.getByRole('button', { name: /aplicar/i }).click()
     await expect(page.locator('aside')).toContainText('(-)')
 
@@ -97,17 +110,17 @@ test.describe('carrinho', () => {
 
     // cupom inválido
     await page.getByRole('button', { name: /remover cupom/i }).click()
-    await page.getByLabel(/código promocional/i).fill('INVALIDO')
+    await page.locator('#cart-coupon').fill('INVALIDO')
     await page.getByRole('button', { name: /aplicar/i }).click()
     await expect(page.locator('[data-sonner-toast]').first()).toContainText('inválido')
 
     // ajuste de quantidade pelo carrinho
-    const item = page.locator('article', { hasText: 'Emerald Ape' })
+    const item = cartRows(page).filter({ hasText: 'Emerald Ape' })
     await item.getByRole('button', { name: 'Aumentar quantidade' }).click()
-    await expect(page.locator('aside')).toContainText('2.38 ETH')
+    await expect(page.locator('aside')).toContainText('6.356 ETH')
 
     await item.getByRole('button', { name: /remover/i }).click()
-    await expect(page.locator('article')).toHaveCount(1)
+    await expect(cartRows(page)).toHaveCount(1)
   })
 
   test('carrinho do visitante é preservado ao autenticar', async ({ page }) => {
@@ -116,7 +129,7 @@ test.describe('carrinho', () => {
 
     await login(page, undefined, '/cart')
     await page.goto('/cart')
-    await expect(page.locator('article', { hasText: 'Neon Vessel' })).toBeVisible()
+    await expect(cartRows(page).filter({ hasText: 'Neon Vessel' })).toBeVisible()
   })
 })
 
@@ -127,14 +140,18 @@ test.describe('detalhe do NFT', () => {
 
     await login(page, undefined, '/nft/nft-01')
     await page.goto('/nft/nft-01')
-    await page.waitForTimeout(800)
+    await waitForSession(page)
+    await expect(page.getByRole('heading', { name: 'Emerald Ape #042' })).toBeVisible()
 
-    const favorite = page.getByRole('button', { name: /adicionar Emerald Ape #042 aos favoritos/i })
+    const favorite = page.locator('button[aria-pressed]:has-text("Favoritar")')
+    await expect(favorite).toBeVisible()
     await favorite.click()
-    await expect(page.getByRole('button', { name: /remover Emerald Ape #042 dos favoritos/i })).toBeVisible()
+    await expect(page.locator('button[aria-pressed]:has-text("Favoritado")')).toBeVisible()
+    // espera a persistência no servidor antes de recarregar
+    await expect(page.getByText('Adicionado aos favoritos.')).toBeVisible()
 
     await page.reload()
-    await expect(page.getByRole('button', { name: /remover Emerald Ape #042 dos favoritos/i })).toBeVisible()
+    await expect(page.locator('button[aria-pressed]:has-text("Favoritado")')).toBeVisible()
   })
 
   test('NFT inexistente tem tratamento dedicado', async ({ page }) => {
@@ -147,4 +164,5 @@ test.describe('detalhe do NFT', () => {
     await expect(page.getByRole('button', { name: /edição esgotada/i })).toBeDisabled()
   })
 })
+
 

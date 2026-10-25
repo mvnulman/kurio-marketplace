@@ -1,6 +1,6 @@
 
 
-import { DEMO_ACCOUNT, SECOND_ACCOUNT, login, logout, setScenario, startFresh } from './helpers'
+import { DEMO_ACCOUNT, SECOND_ACCOUNT, login, logout, setScenario, startFresh, waitForSession } from './helpers'
 import { expect, test } from './fixtures'
 
 test.describe('conta e sessão', () => {
@@ -10,10 +10,10 @@ test.describe('conta e sessão', () => {
     await page.getByRole('button', { name: /criar conta/i }).click()
     await expect(page.locator('p[role=alert]').first()).toBeVisible()
 
-    await page.getByLabel(/nome de usuário/i).fill('anakurio')
-    await page.getByLabel(/e-mail/i).fill(DEMO_ACCOUNT.email)
-    await page.getByLabel(/^senha/i).fill('senhaSegura123')
-    await page.getByLabel(/confirmar senha/i).fill('senhaSegura123')
+    await page.locator('#register-username').fill('novato')
+    await page.locator('#register-email').fill(DEMO_ACCOUNT.email)
+    await page.locator('#register-password').fill('senhaSegura123')
+    await page.locator('#register-password-confirmation').fill('senhaSegura123')
     await page.getByRole('button', { name: /criar conta/i }).click()
 
     await expect(page.locator('p[role=alert]').first()).toContainText('e-mail')
@@ -21,10 +21,10 @@ test.describe('conta e sessão', () => {
 
   test('cadastro e login de conta nova funcionam', async ({ page }) => {
     await startFresh(page, '/register')
-    await page.getByLabel(/nome de usuário/i).fill('novato')
-    await page.getByLabel(/e-mail/i).fill('novato@kurio.art')
-    await page.getByLabel(/^senha/i).fill('senhaSegura123')
-    await page.getByLabel(/confirmar senha/i).fill('senhaSegura123')
+    await page.locator('#register-username').fill('novato')
+    await page.locator('#register-email').fill('novato@kurio.art')
+    await page.locator('#register-password').fill('senhaSegura123')
+    await page.locator('#register-password-confirmation').fill('senhaSegura123')
     await page.getByRole('button', { name: /criar conta/i }).click()
     await page.waitForURL('/')
     await expect(page.getByRole('button', { name: /menu da conta/i })).toBeVisible()
@@ -32,12 +32,12 @@ test.describe('conta e sessão', () => {
 
   test('login inválido mostra erro e login válido redireciona', async ({ page }) => {
     await startFresh(page, '/login')
-    await page.getByLabel(/e-mail/i).fill(DEMO_ACCOUNT.email)
-    await page.getByLabel(/senha/i).fill('senha-errada')
+    await page.locator('#login-email').fill(DEMO_ACCOUNT.email)
+    await page.locator('#login-password').fill('senha-errada')
     await page.getByRole('button', { name: /entrar/i, exact: true }).click()
     await expect(page.locator('p[role=alert]').first()).toContainText('E-mail ou senha')
 
-    await page.getByLabel(/senha/i).fill(DEMO_ACCOUNT.password)
+    await page.locator('#login-password').fill(DEMO_ACCOUNT.password)
     await page.getByRole('button', { name: /entrar/i, exact: true }).click()
     await page.waitForURL('/')
     await expect(page.getByRole('button', { name: /menu da conta/i })).toBeVisible()
@@ -61,8 +61,8 @@ test.describe('conta e sessão', () => {
     await expect(page.locator('p[role=status], p[role=alert]').first()).toContainText('expirou')
 
     // retomada: login volta para a rota original
-    await page.getByLabel(/e-mail/i).fill(DEMO_ACCOUNT.email)
-    await page.getByLabel(/senha/i).fill(DEMO_ACCOUNT.password)
+    await page.locator('#login-email').fill(DEMO_ACCOUNT.email)
+    await page.locator('#login-password').fill(DEMO_ACCOUNT.password)
     await page.getByRole('button', { name: /entrar/i, exact: true }).click()
     await page.waitForURL('/profile')
   })
@@ -70,17 +70,21 @@ test.describe('conta e sessão', () => {
   test('troca de usuário isola dados privados', async ({ page }) => {
     await startFresh(page)
     await login(page)
-    // Ana favorita
-    await page.goto('/nft/nft-01')
-    await page.waitForTimeout(600)
-    await page.getByRole('button', { name: /adicionar Emerald Ape/i }).click()
+    // Ana favorita (botão com rótulo) — obra fora do seed das duas contas
+    await page.goto('/nft/nft-02')
+    await waitForSession(page)
+    await expect(page.getByRole('heading', { name: 'Sage Nomad #009' })).toBeVisible()
+    await page.locator('button[aria-pressed]:has-text("Favoritar")').click()
     await page.waitForTimeout(700)
+    await expect(page.locator('button[aria-pressed]:has-text("Favoritado")')).toBeVisible()
 
     await logout(page)
     await login(page, SECOND_ACCOUNT, '/profile')
-    await page.goto('/nft/nft-01')
-    await page.waitForTimeout(600)
-    await expect(page.getByRole('button', { name: /adicionar Emerald Ape/i })).toBeVisible()
+    await page.goto('/nft/nft-02')
+    await waitForSession(page)
+    await expect(page.getByRole('heading', { name: 'Sage Nomad #009' })).toBeVisible()
+    await expect(page.locator('button[aria-pressed]:has-text("Favoritar")')).toBeVisible()
   })
 })
+
 

@@ -22,9 +22,9 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { useProfileQuery, useWalletsQuery } from '@/features/account/queries'
-import { cartKeys } from '@/features/cart/queries'
+import { cartKeys, useCartQuery } from '@/features/cart/queries'
 import { CheckoutSummary } from '@/features/checkout/checkout-summary'
-import { useQuoteQuery } from '@/features/checkout/queries'
+import { useCheckoutQuoteQuery } from '@/features/checkout/queries'
 import { checkoutSchema, type CheckoutValues } from '@/features/checkout/schema'
 import { fetchQuote } from '@/lib/api/cart'
 import { createOrder } from '@/lib/api/orders'
@@ -38,7 +38,8 @@ import type { ConnectionState } from './checkout-summary'
 export function CheckoutPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const quoteQuery = useQuoteQuery()
+  const quoteQuery = useCheckoutQuoteQuery()
+  const cartQuery = useCartQuery()
   const profileQuery = useProfileQuery()
   const walletsQuery = useWalletsQuery()
 
@@ -113,6 +114,29 @@ export function CheckoutPage() {
   const walletReady = values.useOtherWallet
     ? /^0x[a-fA-F0-9]{40}$/.test(values.walletAddress ?? '')
     : connection === 'connected' && selectedWalletId !== null
+
+  // Após um timeout, o pedido pode ter sido confirmado em segundo plano:
+  // com o carrinho esvaziado, mantém o contexto sem permitir duplicação.
+  const pendingAfterTimeout =
+    hasPendingAttempt && Boolean(cartQuery.data && cartQuery.data.items.length === 0)
+
+  if (pendingAfterTimeout) {
+    return (
+      <div className="container-page py-16">
+        <div className="border-accent/40 bg-accent/5 mx-auto max-w-xl rounded-xl border p-8 text-center">
+          <Loader2 className="text-primary mx-auto size-10 animate-spin" aria-hidden="true" />
+          <h1 className="mt-4 text-lg font-bold">Pedido em processamento</h1>
+          <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-xs leading-relaxed">
+            Registramos uma tentativa de pagamento que ainda não foi concluída. Acompanhe o
+            resultado nos seus pedidos — a compra não será duplicada.
+          </p>
+          <Button asChild className="mt-6">
+            <Link to="/orders">Ver meus pedidos</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   async function onConfirm() {
     const valid = await trigger()
@@ -425,7 +449,14 @@ export function CheckoutPage() {
             <Button variant="outline" asChild>
               <Link to="/cart">Revisar carrinho</Link>
             </Button>
-            <Button onClick={() => setOutdatedQuote(null)}>Entendi, vou revisar</Button>
+            <Button
+              onClick={() => {
+                setOutdatedQuote(null)
+                void navigate({ to: '/cart' })
+              }}
+            >
+              Entendi, vou revisar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -456,3 +487,4 @@ function CheckoutSkeleton() {
     </div>
   )
 }
+

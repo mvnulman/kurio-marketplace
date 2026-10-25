@@ -2,14 +2,22 @@
 
 import type { Page } from '@playwright/test'
 
-import { addNftToCart, changeNftPrice, DEMO_ACCOUNT, login, setScenario, startFresh } from './helpers'
+import {
+  addNftToCart,
+  cartRows,
+  changeNftPrice,
+  DEMO_ACCOUNT,
+  login,
+  setScenario,
+  startFresh,
+} from './helpers'
 import { expect, test } from './fixtures'
 
 async function prepareCheckout(page: Page) {
   await startFresh(page)
   await login(page, undefined, '/checkout')
   await page.goto('/nft/nft-01')
-  await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+  await page.getByRole('button', { name: 'Comprar', exact: true }).click()
   await page.waitForTimeout(600)
   await page.goto('/checkout')
   await page.waitForTimeout(900)
@@ -59,10 +67,10 @@ test.describe('checkout e pedidos', () => {
     await page.waitForURL('**/orders/**', { timeout: 20_000 })
     await page.waitForTimeout(3000)
 
-    await expect(page.getByText('Pagamento não concluído')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Pagamento não concluído' })).toBeVisible()
 
     await page.goto('/cart')
-    await expect(page.locator('article', { hasText: 'Emerald Ape' })).toBeVisible()
+    await expect(cartRows(page).filter({ hasText: 'Emerald Ape' })).toBeVisible()
   })
 
   test('timeout após criação recupera o mesmo pedido por idempotência', async ({ page }) => {
@@ -113,33 +121,37 @@ test.describe('checkout e pedidos', () => {
     await expect(dialog).toContainText('mudaram')
 
     // sem confirmar, volta ao carrinho para revisar
-    await dialog.getByRole('button', { name: /revisar carrinho/i }).click()
+    await dialog.getByRole('link', { name: /revisar carrinho/i }).click()
     await page.waitForURL('/cart')
     await expect(page.locator('aside')).toContainText('2.75 ETH')
   })
 
-  test('checkout exige dados validados e carteira conectada', async ({ page }) => {
+  test('checkout exige carteira conectada e dados validados', async ({ page }) => {
     await startFresh(page)
     await login(page, undefined, '/checkout')
     await addNftToCart(page, 'nft-01')
     await page.goto('/checkout')
     await page.waitForTimeout(1000)
 
-    // sem carteira conectada
-    await page.getByRole('button', { name: /confirmar compra/i }).click()
-    await expect(page.locator('[data-sonner-toast]').first()).toContainText('carteira')
+    const confirm = page.getByRole('button', { name: /confirmar compra/i })
+    await expect(confirm).toBeDisabled()
 
-    // campo inválido
-    await page.getByLabel(/nome e? ?ens/i).fill('!')
-    await page.getByRole('button', { name: /confirmar compra/i }).click()
-    await expect(page.getByLabel(/nome e? ?ens/i)).toHaveAttribute('aria-invalid', 'true')
+    await page.locator('#checkout-ens').fill('!')
+    await page.getByRole('radio').first().click()
+    await page.waitForTimeout(1300)
+    await expect(confirm).toBeEnabled()
+    await confirm.click()
+
+    await expect(page.locator('#checkout-ens')).toHaveAttribute('aria-invalid', 'true')
     await expect(page.locator('p[role=alert]').first()).toBeVisible()
   })
 
   test('conta de demonstração mantém credenciais documentadas', async ({ page }) => {
     await startFresh(page, '/login')
     await page.getByRole('button', { name: /preencher credenciais/i }).click()
-    await expect(page.getByLabel(/e-mail/i)).toHaveValue(DEMO_ACCOUNT.email)
+    await expect(page.locator('#login-email')).toHaveValue(DEMO_ACCOUNT.email)
   })
 })
+
+
 

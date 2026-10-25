@@ -24,11 +24,11 @@ test.describe('regressão visual', () => {
     await startFresh(page)
     await login(page, undefined, '/cart')
     await page.goto('/nft/nft-01')
-    await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+    await page.getByRole('button', { name: 'Comprar', exact: true }).click()
     await page.waitForTimeout(600)
     await page.goto('/nft/nft-07')
     await page.getByRole('button', { name: 'Aumentar quantidade' }).click()
-    await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+    await page.getByRole('button', { name: 'Comprar', exact: true }).click()
     await page.waitForTimeout(600)
 
     await page.goto('/cart')
@@ -40,7 +40,7 @@ test.describe('regressão visual', () => {
     await startFresh(page)
     await login(page, undefined, '/checkout')
     await page.goto('/nft/nft-01')
-    await page.getByRole('button', { name: /comprar/i, exact: true }).click()
+    await page.getByRole('button', { name: 'Comprar', exact: true }).click()
     await page.waitForTimeout(600)
     await page.goto('/checkout')
     await page.waitForTimeout(1200)
@@ -49,3 +49,4 @@ test.describe('regressão visual', () => {
     await expect(page).toHaveScreenshot('pagamento.png', { fullPage: false })
   })
 })
+
