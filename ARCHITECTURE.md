@@ -235,12 +235,14 @@ expõe tudo isso na interface.
 
 | Página / perfil | Performance | Accessibility | Best Practices | SEO |
 | --- | --- | --- | --- | --- |
-| Início · desktop | 99 | 100 | 100 | 100 |
-| Início · mobile | 80 | 100 | 100 | 100 |
-| Detalhe · desktop | 92 | 100 | 100 | 100 |
-| Detalhe · mobile | 77 | 100 | 100 | 100 |
+| Início · desktop | 98 | 100 | 100 | 100 |
+| Início · mobile | 77 | 100 | 100 | 100 |
+| Detalhe · desktop | 98 | 100 | 100 | 100 |
+| Detalhe · mobile | 76 | 100 | 100 | 100 |
 
-CLS ≤ 0,16 (pior caso no detalhe, por swap de fonte/lazy image), TBT ≤ 28ms.
+CLS **0** em todas as páginas/perfis (o skeleton do detalhe reserva as seções de
+avaliações e relacionadas antes dos dados, mantendo o rodapé fora da viewport
+durante a carga) e TBT ≤ 29 ms.
 
 **Causas do mobile abaixo da meta (≥ 90):**
 1. A demo é um SPA estático: nada é renderizado antes de todo o JavaScript
