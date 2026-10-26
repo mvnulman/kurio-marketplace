@@ -231,13 +231,37 @@ expõe tudo isso na interface.
 
 ## 10. Testes e auditorias
 
+### Lighthouse (deploy em HTTPS, 3 medições, mediana)
+
+| Página / perfil | Performance | Accessibility | Best Practices | SEO |
+| --- | --- | --- | --- | --- |
+| Início · desktop | 99 | 100 | 100 | 100 |
+| Início · mobile | 80 | 100 | 100 | 100 |
+| Detalhe · desktop | 92 | 100 | 100 | 100 |
+| Detalhe · mobile | 77 | 100 | 100 | 100 |
+
+CLS ≤ 0,16 (pior caso no detalhe, por swap de fonte/lazy image), TBT ≤ 28ms.
+
+**Causas do mobile abaixo da meta (≥ 90):**
+1. A demo é um SPA estático: nada é renderizado antes de todo o JavaScript
+   (react-dom + TanStack + camada de simulação, ~478 kB de chunk quando mocks
+   ativos) — sob throttling de 4G (1,6 Mbps) e CPU 4× do perfil mobile, o LCP
+   da primeira imagem do catálogo/hero depende dessa carga.
+2. Regressão visual exigida pelo desafio versiona as artes em `.webp` (720 px,
+   ~38 kB cada); otimizável, mas com impacto secundário.
+
+**Oportunidades identificadas (não aplicadas):** dividir `react-dom`/Radix em
+chunks de vendor com `manualChunks`, pré-carregar o chunk de rotas, migrar os
+primitivos menos usados (tooltip/accordion) para import sob demanda e reduzir
+artes para 640 px — mantidas fora para não comprometer estabilidade da entrega.
+
 - Playwright (`e2e/`): catálogo/URL, carrinho, conta/sessão/isolamento, favoritos
   com falha+recuperação, compra completa, recusado, timeout com idempotência,
   cliques duplicados, cotação desatualizada, tempo real via socket, teclado/foco,
   skeletons com latência e regressão visual (baselines por projeto).
 - Lighthouse (`pnpm lighthouse`): início + detalhe, mobile/desktop, 3 medições,
   mediana por categoria em `reports/lighthouse/summary.json` com relatórios
-  HTML/JSON versionáveis.
+  HTML/JSON versionáveis. Para auditar o deploy: `AUDIT_URL=https://… pnpm lighthouse`.
 
 ## 11. Limitações conhecidas
 

@@ -3,7 +3,14 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "NFT Marketplace — Jungle Gaming frontend challenge",
+  "description": "NFT Marketplace - Jungle Gaming frontend challenge",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": ["msw"]
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

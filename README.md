@@ -4,7 +4,8 @@ Implementação do [desafio frontend da Jungle Gaming](https://github.com/jungle
 marketplace de NFTs com descoberta, compra e conta do colecionador, desktop e mobile,
 tudo funcionando sobre uma API simulada (MSW) com tempo real em Socket.IO.
 
-- **Demo online:** _link da Vercel_ (após deploy — ver seção Deploy)
+- **Demo online:** <https://kurio-marketplace-beryl.vercel.app>
+- **Repositório:** <https://github.com/mvnulman/kurio-marketplace>
 - **Documentação de arquitetura:** [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 
 ## Stack obrigatória (efetivamente usada)
@@ -36,6 +37,10 @@ pnpm typecheck
 pnpm lint
 pnpm format
 pnpm test:e2e        # Playwright (desktop + mobile, mocks ligados)
+```
+
+> Para os testes E2E, instale o navegador antes da primeira execução:
+> `pnpm exec playwright install --with-deps chromium` (no Windows, sem `--with-deps`).
 pnpm test:e2e:ui     # interface interativa dos testes
 pnpm test:e2e:report # relatório HTML das últimas execuções
 pnpm lighthouse      # auditoria (3 medições por página/perfil)
@@ -100,18 +105,14 @@ Três formas equivalentes de ativar:
 
 ## Deploy
 
-A aplicação é 100% estática (SPA) com mocks no bundle; o deploy recomendado é a
-[Vercel](https://vercel.com/docs/frameworks/frontend/vite):
+Publicado na [Vercel](https://vercel.com/docs/frameworks/frontend/vite) via import do
+repositório GitHub (build `pnpm build`, saída `dist`):
 
-```bash
-pnpm build
-vercel deploy --prod   # ou via GitHub (build pnpm build, output dist)
-```
-
+- **URL pública:** <https://kurio-marketplace-beryl.vercel.app>
 - Reescrita de rotas para SPA direto no `vercel.json` (acesso direto e refresh funcionam).
 - Alternativas aceitas: Netlify (`netlify.toml` incluído) e Cloudflare Pages.
-- A URL pública deve rodar com `VITE_ENABLE_MOCKS=true` para os fluxos e eventos
-  funcionarem na demonstração.
+- A versão publicada roda com `VITE_ENABLE_MOCKS=true`: mocks e fluxos de tempo real
+  funcionam na demonstração.
 
 ## Estrutura
 
