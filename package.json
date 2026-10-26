@@ -21,6 +21,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
+    "assets": "node scripts/prepare-assets.mjs",
     "lighthouse": "node scripts/lighthouse.mjs"
   },
   "dependencies": {
