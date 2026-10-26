@@ -56,7 +56,9 @@ test.describe('conta e sessão', () => {
     await expect(page.getByRole('heading', { name: 'Meus pedidos' })).toBeVisible()
 
     await setScenario(page, 'session-expired')
-    await page.goto('/profile')
+    // O redirect client-side para /login pode abortar a navegação (ERR_ABORTED);
+    // o destino final é validado no waitForURL abaixo.
+    await page.goto('/profile', { waitUntil: 'domcontentloaded' }).catch(() => {})
     await page.waitForURL(/\/login/)
     await expect(page.locator('p[role=status], p[role=alert]').first()).toContainText('expirou')
 
