@@ -41,6 +41,32 @@ function NftDetailSkeleton() {
           <Skeleton className="h-24 w-full" />
         </div>
       </div>
+      {/* Reserva as seções inferiores (avaliações + relacionadas) para o
+          rodapé já nascer fora da viewport — evita layout shift quando os
+          dados chegam e a página cresce. */}
+      <div className="mt-14 space-y-4" aria-hidden="true">
+        <Skeleton className="h-3 w-56" />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="flex gap-3">
+              <Skeleton className="size-10 shrink-0 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-36" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-2/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-12 space-y-4" aria-hidden="true">
+        <Skeleton className="h-3 w-44" />
+        <div className="flex gap-4 overflow-hidden">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} className="aspect-square w-[210px] shrink-0 rounded-xl" />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
