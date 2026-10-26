@@ -89,7 +89,7 @@ function bindNftUpdated(queryClient: ReturnType<typeof useQueryClient>, event: N
   })
 
   const cart = queryClient.getQueryData<Cart>(cartKeys.detail())
-  const inCart = cart?.items.some((item) => item.nftId === payload.nftId)
+  const inCart = (cart?.items ?? []).some((item) => item.nftId === payload.nftId)
 
   if (inCart) {
     void queryClient.invalidateQueries({ queryKey: cartKeys.all })
@@ -234,3 +234,4 @@ export function useRealtime(): RealtimeContextValue {
 }
 
 export { disconnectSocket }
+

@@ -28,7 +28,7 @@ function CartPage() {
   const cart = cartQuery.data
   const count = cartItemCount(cart)
   const hasUnavailable = Boolean(
-    cart?.items.some((item) => !item.isAvailable),
+    (cart?.items ?? []).some((item) => !item.isAvailable),
   )
 
   async function handleApplyCoupon(code: string) {
@@ -133,3 +133,4 @@ function CartPage() {
     </div>
   )
 }
+

@@ -17,7 +17,10 @@ import lighthouse from 'lighthouse'
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const reportDir = path.join(root, 'reports', 'lighthouse')
 const PORT = 4173
-const BASE_URL = `http://localhost:${PORT}`
+
+/** Audita uma URL externa (ex.: deploy) com AUDIT_URL=https://… pnpm lighthouse */
+const EXTERNAL_URL = process.env.AUDIT_URL ?? ''
+const BASE_URL = EXTERNAL_URL || `http://localhost:${PORT}`
 
 const PAGES = [
   { id: 'inicio', url: '/' },
@@ -64,6 +67,7 @@ async function waitForServer(url, timeoutMs = 30_000) {
 }
 
 async function startPreview() {
+  if (EXTERNAL_URL) return null
   const child = spawn(process.execPath, [
     path.join(root, 'node_modules', 'vite', 'bin', 'vite.js'),
     'preview',
@@ -89,7 +93,6 @@ async function runOnce(page, profile, index) {
       emulatedUserAgent: profile.emulatedUserAgent,
       throttling: profile.throttling,
     })
-
     const report = result.lhr
     const html = result.report
 
@@ -118,6 +121,9 @@ async function main() {
   const server = await startPreview()
 
   try {
+    if (EXTERNAL_URL) {
+      console.log(`[audit] URL externa: ${EXTERNAL_URL}`)
+    }
     const summary = {}
 
     for (const page of PAGES) {
@@ -154,7 +160,7 @@ async function main() {
     console.log('\n== Mediana por página/perfil ==')
     console.log(JSON.stringify(summary, null, 2))
   } finally {
-    server.kill()
+    if (server) server.kill()
   }
 }
 

@@ -39,6 +39,9 @@ export function NftDetail({
   const addToCart = useAddToCart()
   const [quantity, setQuantity] = useState(1)
 
+  const reviewItems = reviews ?? []
+  const relatedItems = related ?? []
+
   const available = nft.editions.isOpen ? nft.editions.available : 0
   const soldOut = available <= 0
 
@@ -268,7 +271,7 @@ export function NftDetail({
           <TabsList>
             <TabsTrigger value="details">Detalhes do NFT</TabsTrigger>
             <TabsTrigger value="reviews">
-              Avaliações de colecionadores ({reviews.length})
+              Avaliações de colecionadores ({reviewItems.length})
             </TabsTrigger>
           </TabsList>
 
@@ -333,7 +336,7 @@ export function NftDetail({
               </div>
 
               <ul className="space-y-4">
-                {reviews.map((review) => (
+                {reviewItems.map((review) => (
                   <li
                     key={review.id}
                     className={cn('border-border/60 bg-card/30 rounded-lg border p-4')}
@@ -359,7 +362,7 @@ export function NftDetail({
         </Tabs>
       </div>
 
-      {related.length > 0 ? (
+      {relatedItems.length > 0 ? (
         <section aria-labelledby="related-title" className="mt-16">
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -379,7 +382,7 @@ export function NftDetail({
           </div>
 
           <div className="scrollbar-slim mt-5 flex snap-x gap-4 overflow-x-auto pb-2">
-            {related.map((item) => (
+            {relatedItems.map((item) => (
               <div key={item.id} className="w-[190px] shrink-0 snap-start sm:w-[210px]">
                 <NftCard nft={item} />
               </div>
@@ -390,3 +393,6 @@ export function NftDetail({
     </div>
   )
 }
+
+
+

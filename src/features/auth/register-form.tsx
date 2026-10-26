@@ -62,7 +62,7 @@ export function RegisterForm({ search }: { search: AuthSearch }) {
         return
       }
       let mapped = false
-      for (const [field, message] of Object.entries(error.fieldErrors)) {
+      for (const [field, message] of Object.entries(error.fieldErrors ?? {})) {
         if (field === 'username' || field === 'email' || field === 'password') {
           setError(field, { message })
           mapped = true
@@ -178,3 +178,4 @@ export function RegisterForm({ search }: { search: AuthSearch }) {
     </form>
   )
 }
+

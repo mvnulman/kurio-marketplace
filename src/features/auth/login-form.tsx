@@ -47,7 +47,7 @@ export function LoginForm({ search }: { search: AuthSearch }) {
         setFormError('Não foi possível entrar. Tente novamente.')
         return
       }
-      const fields = Object.entries(error.fieldErrors)
+      const fields = Object.entries(error.fieldErrors ?? {})
       let mapped = false
       for (const [field, message] of fields) {
         if (field === 'email' || field === 'password') {
@@ -166,3 +166,4 @@ export function LoginForm({ search }: { search: AuthSearch }) {
     </form>
   )
 }
+

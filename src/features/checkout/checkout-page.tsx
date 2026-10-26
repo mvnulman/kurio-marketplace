@@ -118,7 +118,7 @@ export function CheckoutPage() {
   // Após um timeout, o pedido pode ter sido confirmado em segundo plano:
   // com o carrinho esvaziado, mantém o contexto sem permitir duplicação.
   const pendingAfterTimeout =
-    hasPendingAttempt && Boolean(cartQuery.data && cartQuery.data.items.length === 0)
+    hasPendingAttempt && cartQuery.data?.items?.length === 0
 
   if (pendingAfterTimeout) {
     return (
@@ -487,4 +487,5 @@ function CheckoutSkeleton() {
     </div>
   )
 }
+
 

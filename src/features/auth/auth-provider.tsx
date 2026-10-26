@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 import { login as loginRequest, logout as logoutRequest, register as registerRequest } from '@/lib/api/auth'
@@ -24,13 +24,16 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
-  const sessionQuery = useSessionQuery()
+  // Estado reativo: token em storage não é observável, então espelhamos aqui.
+  const [hasToken, setHasToken] = useState(() => hasStoredSession())
+  const sessionQuery = useSessionQuery(hasToken)
   const session = sessionQuery.data ?? null
-  const isLoading = hasStoredSession() && sessionQuery.isLoading
+  const isLoading = hasToken && sessionQuery.isLoading
 
   const establishSession = useCallback(
     (nextSession: Session) => {
       sessionTokenStorage.set(nextSession.token)
+      setHasToken(true)
       queryClient.setQueryData(sessionKeys.current, nextSession)
       void Promise.all([
         queryClient.invalidateQueries({ queryKey: ['cart'] }),
@@ -47,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearSession = useCallback(() => {
     sessionTokenStorage.clear()
+    setHasToken(false)
     queryClient.clear()
   }, [queryClient])
 
@@ -82,6 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     onUnauthorized((error) => {
       if (error.code !== 'SESSION_EXPIRED') return
+      // Sem token local (ex.: logout em andamento) não há nada a recuperar.
+      if (!sessionTokenStorage.get()) return
 
       clearSession()
       const current = `${window.location.pathname}${window.location.search}`

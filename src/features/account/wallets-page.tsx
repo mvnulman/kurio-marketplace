@@ -100,7 +100,7 @@ function WalletForm({
         return
       }
       let mapped = false
-      for (const [field, message] of Object.entries(error.fieldErrors)) {
+      for (const [field, message] of Object.entries(error.fieldErrors ?? {})) {
         if (field === 'label' || field === 'address' || field === 'ensName') {
           form.setError(field, { message })
           mapped = true
@@ -326,3 +326,4 @@ export function WalletsPage() {
     </section>
   )
 }
+

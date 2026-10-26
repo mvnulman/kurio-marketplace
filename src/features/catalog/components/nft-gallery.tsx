@@ -5,7 +5,7 @@ import type { Nft } from '@/lib/contracts/catalog'
 import { cn } from '@/lib/utils'
 
 export function NftGallery({ nft }: { nft: Nft }) {
-  const images = nft.gallery.length > 0 ? nft.gallery : [nft.imageUrl]
+  const images = nft.gallery && nft.gallery.length > 0 ? nft.gallery : [nft.imageUrl]
   const [activeIndex, setActiveIndex] = useState(0)
   const activeImage = images[activeIndex] ?? nft.imageUrl
 

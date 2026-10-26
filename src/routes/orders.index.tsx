@@ -53,10 +53,11 @@ function OrdersPage() {
           <ul className="border-border/60 divide-y rounded-xl border">
             {query.data.map((order) => {
               const status = STATUS_BADGE[order.status]
+              const orderItems = order.items ?? []
               const summary =
-                order.items.length === 1
-                  ? `${order.items[0]?.name} · ${order.items[0]?.quantity} un.`
-                  : `${order.items.length} obras · ${order.items.reduce((total, item) => total + item.quantity, 0)} un.`
+                orderItems.length === 1
+                  ? `${orderItems[0]?.name} · ${orderItems[0]?.quantity} un.`
+                  : `${orderItems.length} obras · ${orderItems.reduce((total, item) => total + item.quantity, 0)} un.`
 
               return (
                 <li key={order.id}>

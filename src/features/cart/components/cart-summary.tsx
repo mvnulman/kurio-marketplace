@@ -162,7 +162,7 @@ export function CartSummary({
       </Link>
 
       <Badge variant="muted" className="mt-5 w-full justify-center">
-        {cart.items.length} {cart.items.length === 1 ? 'item' : 'itens'} · salvo na sua sessão
+        {(cart.items ?? []).length} {(cart.items ?? []).length === 1 ? 'item' : 'itens'} · salvo na sua sessão
       </Badge>
     </aside>
   )
@@ -177,4 +177,5 @@ export function couponErrorToast(error: unknown): void {
 export function CartSpinner() {
   return <Loader2 className="size-4 animate-spin" aria-hidden="true" />
 }
+
 

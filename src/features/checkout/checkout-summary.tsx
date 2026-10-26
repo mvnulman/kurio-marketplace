@@ -148,7 +148,7 @@ export function CheckoutSummary({
           Carteira e rede
         </legend>
 
-        {wallets.length > 0 ? (
+        {(wallets ?? []).length > 0 ? (
           <RadioGroup
             value={selectedWalletId ?? ''}
             onValueChange={(value) => {
@@ -158,7 +158,7 @@ export function CheckoutSummary({
             className="mt-3"
             aria-label="Selecionar carteira cadastrada"
           >
-            {wallets.map((wallet) => {
+            {(wallets ?? []).map((wallet) => {
               const selected = selectedWalletId === wallet.id
               return (
                 <label
@@ -323,4 +323,6 @@ export function CheckoutSummarySkeleton() {
     </div>
   )
 }
+
+
 

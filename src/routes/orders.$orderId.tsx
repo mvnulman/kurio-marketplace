@@ -34,7 +34,7 @@ function OrderItems({ order }: { order: Order }) {
     <div className="mt-6 text-left">
       <h2 className="text-xs font-bold">Detalhes da transação</h2>
       <ul className="mt-3 divide-y divide-border/60">
-        {order.items.map((item) => (
+        {(order.items ?? []).map((item) => (
           <li key={item.nftId} className="flex items-center gap-3 py-3">
             <img
               src={item.imageUrl}
@@ -255,4 +255,6 @@ function OrderReceiptPage() {
     </div>
   )
 }
+
+
 

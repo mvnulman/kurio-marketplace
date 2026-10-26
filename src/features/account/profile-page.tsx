@@ -140,7 +140,7 @@ export function ProfilePage() {
         return
       }
       let mapped = false
-      for (const [field, message] of Object.entries(error.fieldErrors)) {
+      for (const [field, message] of Object.entries(error.fieldErrors ?? {})) {
         if (field === 'displayName' || field === 'username' || field === 'email' || field === 'ensName' || field === 'walletNickname') {
           form.setError(field, { message })
           mapped = true
@@ -375,3 +375,4 @@ export function ProfilePage() {
     </section>
   )
 }
+

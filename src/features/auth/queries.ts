@@ -12,11 +12,11 @@ export function hasStoredSession(): boolean {
   return Boolean(sessionTokenStorage.get())
 }
 
-export function useSessionQuery() {
+export function useSessionQuery(enabled = hasStoredSession()) {
   return useQuery<Session>({
     queryKey: sessionKeys.current,
     queryFn: ({ signal }) => fetchSession(signal),
-    enabled: hasStoredSession(),
+    enabled,
     retry: false,
     staleTime: 5 * 60_000,
     gcTime: 30 * 60_000,
