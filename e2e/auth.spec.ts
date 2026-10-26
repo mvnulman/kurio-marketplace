@@ -51,14 +51,14 @@ test.describe('conta e sessão', () => {
 
   test('expiração de sessão recolhe contexto e permite retomada', async ({ page }) => {
     await startFresh(page)
-    await login(page, undefined, '/orders')
-    await page.goto('/orders')
-    await expect(page.getByRole('heading', { name: 'Meus pedidos' })).toBeVisible()
+    await login(page, undefined, '/profile')
+    await expect(page.getByRole('heading', { name: 'Perfil do colecionador' })).toBeVisible()
 
     await setScenario(page, 'session-expired')
-    // O redirect client-side para /login pode abortar a navegação (ERR_ABORTED);
-    // o destino final é validado no waitForURL abaixo.
-    await page.goto('/profile', { waitUntil: 'domcontentloaded' }).catch(() => {})
+    // Recarregar zera o cache em memória do TanStack: a sessão é revalidada,
+    // o servidor responde 401 SESSION_EXPIRED e o handler global recolhe para
+    // /login preservando a rota atual — sem depender de revalidações de fundo.
+    await page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {})
     await page.waitForURL(/\/login/)
     await expect(page.locator('p[role=status], p[role=alert]').first()).toContainText('expirou')
 
