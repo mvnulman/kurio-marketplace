@@ -282,3 +282,42 @@ artes para 640 px — mantidas fora para não comprometer estabilidade da entreg
 5. Formulários de pagamento/carteiras simulam conexão de forma determinística
    (conexão com sucesso, desconexão manual e recusa no pagamento); não há QR Code
    de WalletConnect ou assinatura real.
+
+## 12. Comandos de execução
+
+Todos os scripts assumem pnpm 9 (`packageManager` fixado no `package.json`):
+
+```bash
+pnpm install                          # instalar dependências (lockfile versionado)
+
+# Desenvolvimento (mocks ligados por padrão: MSW + Socket.IO simulado)
+pnpm dev                              # http://localhost:5173
+
+# Build e preview (a versão publicada é exatamente `pnpm build` + `pnpm preview`)
+pnpm build                            # tsc -b + vite build (saída em dist/)
+pnpm preview                          # http://localhost:4173 (serve o build)
+
+# Verificação de qualidade
+pnpm typecheck                        # tsc -b (projeto inteiro)
+pnpm lint                             # ESLint (flat config)
+pnpm format                           # Prettier (check + write)
+
+# Testes E2E (Playwright: desktop + mobile; o webServer sobe build+preview em 4173)
+pnpm exec playwright install --with-deps chromium   # 1ª execução (Windows: sem --with-deps)
+pnpm test:e2e                        # suíte completa (72 testes)
+pnpm test:e2e:ui                     # modo interativo
+pnpm test:e2e:report                 # relatório HTML da última execução
+pnpm exec playwright test e2e/checkout.spec.ts      # um arquivo específico
+pnpm exec playwright test --project=chromium-desktop --grep "idempotência"
+
+# Auditoria Lighthouse (início + detalhe, mobile/desktop, 3 medições, mediana)
+pnpm lighthouse                       # auditando `pnpm preview` localmente
+# Auditando o deploy (pwsh: `$env:AUDIT_URL='https://…'; pnpm lighthouse`):
+AUDIT_URL=https://kurio-marketplace-beryl.vercel.app pnpm lighthouse
+
+# Assets (somente ao alterar as artes-base em assets-source/)
+pnpm assets                           # gera as 24 variações .webp em public/assets/nfts
+```
+
+Resultados de auditoria ficam em `reports/lighthouse/` (`summary.json` + relatórios
+HTML/JSON por medição); o relatório Playwright fica em `playwright-report/`.

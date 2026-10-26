@@ -37,14 +37,13 @@ pnpm typecheck
 pnpm lint
 pnpm format
 pnpm test:e2e        # Playwright (desktop + mobile, mocks ligados)
-```
-
-> Para os testes E2E, instale o navegador antes da primeira execução:
-> `pnpm exec playwright install --with-deps chromium` (no Windows, sem `--with-deps`).
 pnpm test:e2e:ui     # interface interativa dos testes
 pnpm test:e2e:report # relatório HTML das últimas execuções
 pnpm lighthouse      # auditoria (3 medições por página/perfil)
 ```
+
+> Para os testes E2E, instale o navegador antes da primeira execução:
+> `pnpm exec playwright install --with-deps chromium` (no Windows, sem `--with-deps`).
 
 ## Variáveis de ambiente
 
