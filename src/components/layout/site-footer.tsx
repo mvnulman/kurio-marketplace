@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, Music2 } from 'lucide-react'
 import { useState } from 'react'
+import { z } from 'zod'
 
 import {
   InstagramMark,
@@ -47,14 +48,25 @@ const CATEGORY_LINKS = [
   { label: 'Utilidade', category: 'utilidade' },
 ]
 
+const newsletterSchema = z.object({
+  email: z.email('Informe um e-mail válido.'),
+})
+
 function NewsletterForm() {
   const [email, setEmail] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   return (
     <form
       className="mt-4 space-y-2"
       onSubmit={(event) => {
         event.preventDefault()
+        const parsed = newsletterSchema.safeParse({ email })
+        if (!parsed.success) {
+          setError(parsed.error.issues[0]?.message ?? 'E-mail inválido.')
+          return
+        }
+        setError(null)
         setEmail('')
         notifyOutOfScope('Newsletter')
       }}
@@ -68,6 +80,8 @@ function NewsletterForm() {
           type="email"
           required
           value={email}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? 'newsletter-email-error' : undefined}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="digite seu e-mail…"
           className="h-10"
@@ -76,9 +90,15 @@ function NewsletterForm() {
           Enviar
         </Button>
       </div>
-      <p className="text-muted-foreground/70 text-[10px] leading-relaxed">
-        Receba lançamentos selecionados, histórias de criadores e novidades do mercado.
-      </p>
+      {error ? (
+        <p id="newsletter-email-error" role="alert" className="text-destructive text-[10px]">
+          {error}
+        </p>
+      ) : (
+        <p className="text-muted-foreground/70 text-[10px] leading-relaxed">
+          Receba lançamentos selecionados, histórias de criadores e novidades do mercado.
+        </p>
+      )}
     </form>
   )
 }

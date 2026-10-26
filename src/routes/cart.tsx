@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
+import { couponSchema } from '@/features/cart/schema'
 import { Breadcrumbs } from '@/components/common/breadcrumbs'
 import { NftCard } from '@/components/common/nft-card'
 import { EmptyState, ErrorState } from '@/components/common/states'
@@ -31,9 +32,14 @@ function CartPage() {
     (cart?.items ?? []).some((item) => !item.isAvailable),
   )
 
-  async function handleApplyCoupon(code: string) {
+  async function handleApplyCoupon(rawCode: string) {
+    const parsed = couponSchema.safeParse({ code: rawCode })
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Código promocional inválido.')
+      return
+    }
     try {
-      await applyCoupon.mutateAsync({ code })
+      await applyCoupon.mutateAsync({ code: parsed.data.code })
       toast.success('Cupom aplicado ao carrinho.')
     } catch (error) {
       couponErrorToast(error)

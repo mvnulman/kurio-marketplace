@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { LogOut, Menu, Search, ShoppingBag, User, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Logo } from '@/components/common/logo'
 import { OutOfScope } from '@/components/common/out-of-scope'
@@ -33,6 +35,10 @@ const NAV_LINKS = [
   { label: 'Mercado', to: '/' as const, hash: 'catalogo', match: 'market' },
 ]
 
+const globalSearchSchema = z.object({
+  q: z.string().trim().min(1, 'Digite um termo para buscar.').max(80, 'Máximo de 80 caracteres.'),
+})
+
 function SearchDialog() {
   const [open, setOpen] = useState(false)
   const [term, setTerm] = useState('')
@@ -57,10 +63,22 @@ function SearchDialog() {
 
   function submit(event: React.FormEvent) {
     event.preventDefault()
+    const trimmed = term.trim()
+
+    if (!trimmed) {
+      setOpen(false)
+      return
+    }
+    const parsed = globalSearchSchema.safeParse({ q: trimmed })
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? 'Termo de busca inválido.')
+      return
+    }
+
     setOpen(false)
     void navigate({
       to: '/',
-      search: { q: term.trim() || undefined },
+      search: { q: parsed.data.q },
       hash: 'catalogo',
     })
   }
