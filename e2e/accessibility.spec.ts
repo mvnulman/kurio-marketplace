@@ -1,6 +1,6 @@
 
 
-import { startFresh } from './helpers'
+import { setScenario, startFresh } from './helpers'
 import { auditA11y, expect, test } from './fixtures'
 
 test.describe('acessibilidade e navegação por teclado', () => {
@@ -50,21 +50,17 @@ test.describe('acessibilidade e navegação por teclado', () => {
   })
 
   test('skeletons com shimmer durante carregamento lento', async ({ page }) => {
-    await page.goto('/?reset=1')
-    await page.evaluate(async () => {
-      await fetch('/api/dev/scenario', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenario: 'slow' }),
-      })
-    })
+    await page.goto('/?rar=epico&reset=1')
 
-    // nova combinação de busca ⇒ chave nova ⇒ carregamento visível
-    await page.goto('/?rar=epico')
-    await page.waitForTimeout(250)
-    await expect(page.locator('#catalogo [data-slot=skeleton]:visible').first()).toBeVisible()
-    await page.waitForTimeout(2500)
-    await expect(page.locator('#catalogo article').first()).toBeVisible()
+    await setScenario(page, 'slow')
+
+    // O recarregamento zera o cache em memória do TanStack Query: a listagem
+    // volta ao estado "pending" e os skeletons aparecem de forma determinística.
+    await page.reload()
+    await expect(page.locator('#catalogo [data-slot=skeleton]:visible').first()).toBeVisible({
+      timeout: 5_000,
+    })
+    await expect(page.locator('#catalogo article').first()).toBeVisible({ timeout: 15_000 })
   })
 })
 
