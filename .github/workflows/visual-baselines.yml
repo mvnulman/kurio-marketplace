@@ -1,0 +1,33 @@
+name: Visual baselines (Linux)
+
+# As baselines de regressão visual são por plataforma (o Chromium renderiza
+# fontes/antialiasing diferente em cada SO). Este workflow gera as baselines
+# do runner Linux do GitHub Actions; baixe o artefato `visual-baselines-linux`
+# e versione os PNGs em `e2e/visual.spec.ts-snapshots/`.
+on:
+  workflow_dispatch:
+
+jobs:
+  linux-baselines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm exec playwright test e2e/visual.spec.ts --update-snapshots
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux
+          path: e2e/visual.spec.ts-snapshots/
+          retention-days: 7
