@@ -16,9 +16,9 @@
     "allowJs": false,
     "noEmit": true,
     "types": ["vite/client", "node"],
-    "baseUrl": ".",
+    // Sem `baseUrl` (deprecado no TS 6): `paths` resolvido relativo a este arquivo.
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src", "vite.config.ts", "playwright.config.ts", "scripts", "e2e"]
